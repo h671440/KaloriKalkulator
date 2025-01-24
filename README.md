@@ -16,7 +16,7 @@ Weekly Rate Table: Shows how many calories to eat if you want to lose or gain 0.
 Installation
 
 Clone this repository:
-git clone https://github.com/YourUsername/CalorieCalculator.git
+git clone https://github.com/h671440/KaloriKalkulator.git
 cd CalorieCalculator
 Install Dependencies:
 npm install
