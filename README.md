@@ -17,11 +17,15 @@ Installation
 
 Clone this repository:
 git clone https://github.com/h671440/KaloriKalkulator.git
+
 cd CalorieCalculator
+
 Install Dependencies:
 npm install
+
 Start the Development Server:
 npm run dev
+
 Open your browser to http://localhost:5173/ (or whatever port Vite displays) to see the calculator in action.
 Usage
 
