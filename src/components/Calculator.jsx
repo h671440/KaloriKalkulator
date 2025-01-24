@@ -65,60 +65,56 @@ const calculateCalories = () => {
   const generateChartData = (intake) => {
     const startWeight = parseFloat(weight);
     const targetWeight = parseFloat(goalWeight);
-    if (!targetWeight || targetWeight <= 0) {
-        return; // do nothing if goalWeight is invalid
-      }
+    if (!targetWeight || targetWeight <= 0) return;
 
   // Are we losing or gaining?
-    const losing = startWeight > targetWeight;
+  const losing = startWeight > targetWeight;
 
-    let currentWeight = startWeight;
-    let week = 0;
-    const dataPoints = [];
+  // Prepare an array for the line chart
+  const dataPoints = [];
 
-    // We'll allow up to 52 weeks or until we cross the goal
-    while (week <= 52) {
-        // Recompute BMR for the current weight
-        let thisWeekBMR;
-        if (sex === "male") {
-          thisWeekBMR = 10 * currentWeight + 6.25 * height + 5;
-        } else {
-          thisWeekBMR = 10 * currentWeight + 6.25 * height - 161;
-        }
-        const thisWeekTDEE = thisWeekBMR * parseFloat(activity);
-  
-        // daily deficit = TDEE - intake
-        const dailyDeficit = thisWeekTDEE - intake;
-  
-        // weekly deficit => how many kg lost or gained in 1 week
-        const weeklyDeficit = dailyDeficit * 7;
-        const kgChange = weeklyDeficit / 7700; // 7700 kcal ~ 1 kg
-  
-        // if losing, we go down by 'kgChange' (if dailyDeficit is positive => we lose)
-        // if gaining, we go up 
-        currentWeight -= kgChange; // subtract because a POSITIVE deficit means losing weight
-  
-        dataPoints.push({
-          week,
-          weight: Number(currentWeight.toFixed(2)),
-        });
-  
-        // Check if we reached or passed the goal
-        if (losing) {
-          if (currentWeight <= targetWeight) {
-            break;
-          }
-        } else {
-          if (currentWeight >= targetWeight) {
-            break;
-          }
-        }
-  
-        week += 1;
-      }
-  
-      setWeightData(dataPoints);
-    };
+  // 1) Push the initial data point (week = 0, weight = startWeight)
+  let currentWeight = startWeight;
+  dataPoints.push({
+    week: 0,
+    weight: Number(currentWeight.toFixed(2)),
+  });
+
+  // 2) Loop from week=1 onward, for up to 52 weeks
+  for (let week = 1; week <= 52; week++) {
+    // Recompute BMR using the *current* weight
+    let thisWeekBMR;
+    if (sex === "male") {
+      thisWeekBMR = 10 * currentWeight + 6.25 * height + 5;
+    } else {
+      thisWeekBMR = 10 * currentWeight + 6.25 * height - 161;
+    }
+    const thisWeekTDEE = thisWeekBMR * parseFloat(activity);
+
+    // Calculate daily and weekly deficit
+    const dailyDeficit = thisWeekTDEE - intake;
+    const weeklyDeficit = dailyDeficit * 7;
+    const kgChange = weeklyDeficit / 7700; // 7700 kcal ~ 1 kg
+
+    // Update currentWeight 
+    // (subtract because a positive deficit means losing weight)
+    currentWeight -= kgChange;
+
+    dataPoints.push({
+      week,
+      weight: Number(currentWeight.toFixed(2)),
+    });
+
+    // Stop if we've crossed the goal
+    if (losing) {
+      if (currentWeight <= targetWeight) break;
+    } else {
+      if (currentWeight >= targetWeight) break;
+    }
+  }
+
+  setWeightData(dataPoints);
+};
   
   
 
@@ -198,6 +194,12 @@ return (
       <div className="calculator-column">
         <div className="calculator-container">
           <h2>Calculate your daily calorie level</h2>
+          <form
+        onSubmit={(e) => {
+          e.preventDefault();   // Prevent the page from reloading
+          calculateCalories();  // Call your calc function
+        }}
+      >
           <label>
             Weight (kg):
             <input
@@ -270,9 +272,10 @@ return (
             />
           </label>
 
-          <button onClick={calculateCalories} className="calculator-button">
-            Calculate
-          </button>
+          <button type="submit" className="calculator-button">
+          Calculate
+        </button>
+      </form>
 
           {calories && (
             <div className="results">
