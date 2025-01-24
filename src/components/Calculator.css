@@ -1,11 +1,40 @@
-.calculator-container {
+/* Create a two-column layout */
+.wrapper {
+    display: flex;         /* side by side columns */
+    justify-content: flex-start; 
+    align-items: flex-start;
+    /* A little spacing */
+    gap: 20px;
     padding: 20px;
-    max-width: 400px;
-    /*margin: auto; */
-    margin-left: 50px;
+  }
+  
+  /* Left column: calculator */
+  .calculator-column {
+    flex: 0 0 400px;     /* fixed width of 400px or so */
+  }
+  
+  /* Right column: chart area */
+  .chart-column {
+    flex: 1;             /* fill remaining space */
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+  }
+  
+  /* Keep your old .calculator-container styles, 
+     but you might remove the margin-left so the 
+     flex layout handles positioning. */
+  .calculator-container {
     background-color: #f4f4f4;
     border-radius: 10px;
+    padding: 20px;
+    /* max-width: 400px;  not strictly needed if you handle flex sizing above */
+    /* margin-left: 50px; remove so it's controlled by the .wrapper layout */
   }
+  
+  /* ... your existing CSS remains as-is, 
+     possibly removing or tweaking margins. */
+  
   
   /* Headings */
   .calculator-container h2 {
@@ -56,7 +85,7 @@
   .results hr {
     margin: 10px 0;
   }
-  
+
   /* The extra goal table styling */
 .goal-table {
     margin-top: 15px;
