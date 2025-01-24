@@ -1,0 +1,73 @@
+.calculator-container {
+    padding: 20px;
+    max-width: 400px;
+    /*margin: auto; */
+    margin-left: 50px;
+    background-color: #f4f4f4;
+    border-radius: 10px;
+  }
+  
+  /* Headings */
+  .calculator-container h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  /* Labels */
+  .calculator-container label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  
+  /* Inputs */
+  .calculator-input {
+    padding: 10px;
+    margin: 5px 0 15px 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Select dropdown */
+  .calculator-select {
+    display: block;
+    padding: 10px;
+    margin: 5px 0 15px 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Button */
+  .calculator-button {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  /* Results box */
+  .results {
+    margin-top: 20px;
+    
+  }
+  
+  .results hr {
+    margin: 10px 0;
+  }
+  
+  /* The extra goal table styling */
+.goal-table {
+    margin-top: 15px;
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .goal-table th,
+  .goal-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+  }
+  

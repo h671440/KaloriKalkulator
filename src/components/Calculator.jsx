@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import "./Calculator.css";
 
 function Calculator(){
     const [weight, setWeight] = useState("");
@@ -7,7 +8,7 @@ function Calculator(){
     const [sex, setSex] = useState("male");
     const [activity, setActivity] = useState("1.2");
     
-
+    const GOAL_WEIGHT = 80;
 
 const calculateCalories = () => {
     if(!weight || weight <= 0 || !height || height <= 0) return;
@@ -21,26 +22,93 @@ const calculateCalories = () => {
     }
     const tdee = BMR * parseFloat(activity);
 
-    const gainone   = tdee + 1100; // +1 kg/week
-    const gainhalf  = tdee + 550;  // +0.5 kg/week
-    const gainquart = tdee + 275;  // +0.25 kg/week
-    const loseone   = tdee - 1100; // -1 kg/week
-    const losehalf  = tdee - 550;  // -0.5 kg/week
-    const losequart = tdee - 275;  // -0.25 kg/week
+    const gainOne   = tdee + 1100; 
+    const gainHalf  = tdee + 550;  
+    const gainQuart = tdee + 275;  
+    const loseOne   = tdee - 1100; 
+    const loseHalf  = tdee - 550;  
+    const loseQuart = tdee - 275;  
 
     setCalories({
       tdee: Math.round(tdee),
-      gainone: Math.round(gainone),
-      gainhalf: Math.round(gainhalf),
-      gainquart: Math.round(gainquart),
-      loseone: Math.round(loseone),
-      losehalf: Math.round(losehalf),
-      losequart: Math.round(losequart),
+      gainOne: Math.round(gainOne),
+      gainHalf: Math.round(gainHalf),
+      gainQuart: Math.round(gainQuart),
+      loseOne: Math.round(loseOne),
+      loseHalf: Math.round(loseHalf),
+      loseQuart: Math.round(loseQuart),
     });
   };
 
+  const buildGoalChart = () => {
+    if (!calories || !weight || parseFloat(weight) <= 0) return null;
+
+    const currentWeight= parseFloat(weight);
+    if(currentWeight === GOAL_WEIGHT){
+        return null;
+    }
+    const kgdifference = GOAL_WEIGHT - currentWeight;
+    const isGaining = kgdifference > 0;
+    const absDiff = Math.abs(kgdifference);
+
+    // Weekly rates we’ll display
+    const rates = [0.25, 0.5, 1.0];
+
+    // Each rate => how many weeks, what daily offset, what daily calories
+    // 1 kg = approx 7700 kcal => daily offset for 1 kg/week is ~1100 kcal
+    // 0.5 => 550, 0.25 => 275
+    const data = rates.map((rate) => {
+    const weeks = absDiff / rate; // e.g. if difference is 4 kg and rate is 0.5 => 8 weeks
+  
+    // The daily offset
+    let offset;
+    if (rate === 1) offset = 1100;
+    else if (rate === 0.5) offset = 550;
+    else offset = 275; // for 0.25
+
+    // If we’re gaining, daily cals = TDEE + offset
+    // If losing, daily cals = TDEE - offset
+    const dailyCals = isGaining
+      ? calories.tdee + offset
+      : calories.tdee - offset;
+
+    return {
+      rate,
+      weeks: weeks.toFixed(1),      // round to 1 decimal
+      dailyCals: Math.round(dailyCals),
+    };
+  });
+
+  
+
+  return (
+    <div className="goal-section">
+      <h3>Plan to reach {GOAL_WEIGHT} kg</h3>
+      <table className="goal-table">
+        <thead>
+          <tr>
+            <th>Weekly Rate (kg/week)</th>
+            <th>Approx Weeks to Reach 80kg</th>
+            <th>Daily Calories</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((row) => (
+            <tr key={row.rate}>
+              <td>{row.rate}</td>
+              <td>{row.weeks}</td>
+              <td>{row.dailyCals}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
+};
+
 return (
-    <div style ={{padding : "20px", maxWidth: "400px", margin: "auto", backgroundColor: "#f4f4f4", borderRadius: "10px"}}>
+    <div className = "calculator-container">
         <h2> Calculate your daily calorie level</h2>
         <label>
             Weight (kg):
@@ -49,7 +117,7 @@ return (
         value = {weight}
         onChange={(e) => setWeight(Number(e.target.value))}
         placeholder="Weight in kg"
-        style={{padding: "10px", margin: "10px", width: "100%"}} 
+        className="calculator-input"
         />
         </label>
 
@@ -60,7 +128,7 @@ return (
           value={height}
           onChange={(e) => setHeight(Number(e.target.value))}
           placeholder="Height in cm"
-          style={{ padding: "10px", margin: "10px 0", width: "100%" }}
+          className="calculator-input"
         />
       </label>
 
@@ -69,7 +137,7 @@ return (
         <select
           value={sex}
           onChange={(e) => setSex(e.target.value)}
-          style={{ display: "block", padding: "10px", margin: "10px 0", width: "100%" }}
+          className="calculator-select"
         >
           <option value="male">Male</option>
           <option value="female">Female</option>
@@ -81,7 +149,7 @@ return (
         <select
           value={activity}
           onChange={(e) => setActivity(e.target.value)}
-          style={{ display: "block", padding: "10px", margin: "10px 0", width: "100%" }}
+          className="calculator-select"
         >
           <option value="1.2">Sedentary (little or no exercise)</option>
           <option value="1.375">Lightly active (1–3 days/week)</option>
@@ -92,27 +160,28 @@ return (
       </label>
 
 
-        <button onClick={calculateCalories} 
-         style={{padding: "10px 20px", backgroundColor: "#28a745", color: "#fff", 
-            border: "none", borderRadius: "5px", cursor: "pointer" }}>
+        <button onClick={calculateCalories} className="calculator-button">
             Calculate
             </button>
 
         {calories && (
-            <div style = {{marginTop: "20px"}}>
+            <div className="results">
                 <h3>Results</h3>
-                <p><strong> gain 1kg/week:</strong> {calories.gain_1} kcal</p>
-                <p><strong>gain 0.5kg/week:</strong> {calories.gain0_5} kcal</p>
-                <p><strong> gain 0.25kg/week:</strong> {calories.gain0_25} kcal</p>
+                <p><strong> gain 1kg/week:</strong> {calories.gainOne} kcal</p>
+                <p><strong>gain 0.5kg/week:</strong> {calories.gainHalf} kcal</p>
+                <p><strong> gain 0.25kg/week:</strong> {calories.gainQuart} kcal</p>
                 <p><strong>maintenence calories:</strong> {calories.tdee} kcal</p>
-                <p><strong> lose 0.25kg/week:</strong> {calories.lose0_25} kcal</p>
-                <p><strong>lose 0.5kg/week:</strong> {calories.lose0_5} kcal</p>
-                <p><strong> lose 1kg/week:</strong> {calories.lose_1} kcal</p>
+                <p><strong> lose 0.25kg/week:</strong> {calories.loseQuart} kcal</p>
+                <p><strong>lose 0.5kg/week:</strong> {calories.loseHalf} kcal</p>
+                <p><strong> lose 1kg/week:</strong> {calories.loseOne} kcal</p>
+                {buildGoalChart()}
             </div>
         )}
        
     </div>
 );
-
 }
+
+
+
 export default Calculator;
